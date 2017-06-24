@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nwalign.h"
+#include "blosum.h"
 
 int **get_blosum_matrix(char *matrix_name) {
   int i, j, m, n;
   int **full_matrix;
-  int **raw_data = NULL;
+  int (*raw_data)[24];
   if (strcmp(matrix_name, "BLOSUM50") == 0) {
-    raw_data = (int **) blosum50_data;
-  }
-  if (raw_data == NULL) {
+    raw_data = blosum50_data;
+  } else {
     return NULL;
   }
   full_matrix = (int **) malloc(sizeof(int *) * 256);
@@ -39,7 +39,7 @@ sequence_alignment *NeedlemanWunsch(char *seq1, char *seq2, char *matrix_name,
   unsigned short aa, bb;
   sequence_alignment *result;
   matrix_cell **f;
-  matrix_cell cell_tmp;
+  matrix_cell *cell_tmp;
   int score_diag, score_left, score_up;
   char_list *tmp1_aligned, *tmp2_aligned, *last1_aligned, *last2_aligned;
   char_list *seq1_traceback, *seq2_traceback;
@@ -53,11 +53,11 @@ sequence_alignment *NeedlemanWunsch(char *seq1, char *seq2, char *matrix_name,
   f = (matrix_cell **) malloc(sizeof(matrix_cell *) * max_x);
   for (i = 0; i < max_x; i++) {
     f[i] = (matrix_cell *) malloc(sizeof(matrix_cell) * max_y);
-    f[i][0].score = 0;
+    f[i][0].score = -i*gap_penalty;
     f[i][0].cell_pointer = CELL_LEFT;
   }
   for (j = 0; j < max_y; j++) {
-    f[0][j].score = 0;
+    f[0][j].score = -j*gap_penalty;
     f[0][j].cell_pointer = CELL_UP;
   }
   for (i = 1; i < max_x; i++) {
@@ -67,32 +67,32 @@ sequence_alignment *NeedlemanWunsch(char *seq1, char *seq2, char *matrix_name,
       score_diag = f[i-1][j-1].score + score_matrix[aa][bb];
       score_left = f[i-1][j].score - gap_penalty;
       score_up = f[i][j-1].score - gap_penalty;
-      cell_tmp = f[i][j];
+      cell_tmp = &(f[i][j]);
       if ((score_diag >= score_left) && (score_diag >= score_up)) {
-        cell_tmp.score = score_diag;
-        cell_tmp.cell_pointer = CELL_DIAG;
+        cell_tmp->score = score_diag;
+        cell_tmp->cell_pointer = CELL_DIAG;
       } else if (score_left >= score_up) {
-        cell_tmp.score = score_left;
-        cell_tmp.cell_pointer = CELL_LEFT;
+        cell_tmp->score = score_left;
+        cell_tmp->cell_pointer = CELL_LEFT;
       } else {
-        cell_tmp.score = score_up;
-        cell_tmp.cell_pointer = CELL_UP;
+        cell_tmp->score = score_up;
+        cell_tmp->cell_pointer = CELL_UP;
       }
     }
-  } 
+  }
   seq1_traceback = seq2_traceback = NULL;
   i = max_x - 1;
   j = max_y - 1;
   while ((i >= 0) && (j >= 0) && !((i == 0) && (j == 0))) {
-    cell_tmp = f[i][j];
+    cell_tmp = &(f[i][j]);
     tmp1_aligned = (char_list *) malloc(sizeof(char_list));
     tmp2_aligned = (char_list *) malloc(sizeof(char_list));
-    if (cell_tmp.cell_pointer == CELL_DIAG) {
+    if (cell_tmp->cell_pointer == CELL_DIAG) {
       tmp1_aligned->c = seq1[i-1];
       tmp2_aligned->c = seq2[j-1];
       i--;
       j--;
-    } else if (cell_tmp.cell_pointer == CELL_LEFT) {
+    } else if (cell_tmp->cell_pointer == CELL_LEFT) {
       tmp1_aligned->c = seq1[i-1];
       tmp2_aligned->c = '-';
       i--;

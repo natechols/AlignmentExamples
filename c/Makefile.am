@@ -1,2 +1,2 @@
-SUBDIRS = src .
+SUBDIRS = src . tests
 CFLAGS=-ansi -Wall -pedantic
