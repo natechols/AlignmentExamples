@@ -18,6 +18,7 @@ DIAG = (-1, -1)
 
 
 class NeedlemanWunsch(object):
+
     """
     Result of a global pairwise sequence alignment.
     """
@@ -33,18 +34,19 @@ class NeedlemanWunsch(object):
         f = [[None for y in range(max_y)] for x in range(max_x)]
         # fill top row
         for i in range(max_x):
-            f[i][0] = MatrixCell(-i*gap_penalty, LEFT)
+            f[i][0] = MatrixCell(-i * gap_penalty, LEFT)
         # fill left column
         for j in range(max_y):
-            f[0][j] = MatrixCell(-j*gap_penalty, UP)
+            f[0][j] = MatrixCell(-j * gap_penalty, UP)
         for i in range(1, max_x):
-            aa = seq1[i-1]
+            aa = seq1[i - 1]
             for j in range(1, max_y):
-                bb = seq2[j-1]
+                bb = seq2[j - 1]
                 f[i][j] = max(
-                    MatrixCell(f[i-1][j-1].score + score_matrix(aa, bb), DIAG),
-                    MatrixCell(f[i-1][j].score - gap_penalty, LEFT),
-                    MatrixCell(f[i][j-1].score - gap_penalty, UP),
+                    MatrixCell(
+                        f[i - 1][j - 1].score + score_matrix(aa, bb), DIAG),
+                    MatrixCell(f[i - 1][j].score - gap_penalty, LEFT),
+                    MatrixCell(f[i][j - 1].score - gap_penalty, UP),
                     key=lambda c: c.score)
         self._dp_matrix = f
         tmp_seq1 = []
@@ -55,17 +57,17 @@ class NeedlemanWunsch(object):
         while i >= 0 and j >= 0:
             cell = f[i][j]
             if cell.pointer == DIAG:
-                tmp_seq1.append(seq1[i-1])
-                tmp_seq2.append(seq2[j-1])
+                tmp_seq1.append(seq1[i - 1])
+                tmp_seq2.append(seq2[j - 1])
                 i -= 1
                 j -= 1
             elif cell.pointer == LEFT:
-                tmp_seq1.append(seq1[i-1])
+                tmp_seq1.append(seq1[i - 1])
                 tmp_seq2.append("-")
                 i -= 1
             elif cell.pointer == UP:
                 tmp_seq1.append("-")
-                tmp_seq2.append(seq2[j-1])
+                tmp_seq2.append(seq2[j - 1])
                 j -= 1
             else:
                 assert False

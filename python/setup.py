@@ -17,4 +17,7 @@ setup(
     description="Simple Needleman-Wunsch alignment example",
     packages=["nwalign"],
     package_dir={'':'.'},
-    package_data={"nwalign": "resources/*.txt"})
+    package_data={"nwalign": "resources/*.txt"},
+    entry_points={"console_scripts": [
+        "nwalign = nwalign.main:main"
+    ]})

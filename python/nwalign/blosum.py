@@ -10,6 +10,7 @@ def _load_file(file_name):
 
 
 class BlosumMatrix(object):
+
     def __init__(self, name, data):
         self._scores = {}
         aa_cols = None
@@ -19,7 +20,7 @@ class BlosumMatrix(object):
             fields = line.strip().split()
             if line.startswith(" ") and aa_cols is None:
                 aa_cols = fields
-                assert len(aa_cols) == 24 # XXX ???
+                assert len(aa_cols) == 24  # XXX ???
                 for aa in aa_cols:
                     self._scores[aa] = {}
             else:
