@@ -79,6 +79,9 @@ class NeedlemanWunsch(object):
     def alignment(self):
         return (self._seq1_aligned, self._seq2_aligned)
 
+    def length(self):
+        return len(self._seq1_aligned)
+
     def identity(self):
         n_mm = n_ins = n_del = 0
         for aa, bb in zip(self._seq1_aligned, self._seq2_aligned):
@@ -88,7 +91,7 @@ class NeedlemanWunsch(object):
                 n_del += 1
             elif aa != bb:
                 n_mm += 1
-        return max(0, 1. - (n_mm + n_ins + n_del) / float(len(self._seq1)))
+        return max(0, 1. - float(n_mm + n_ins + n_del) / self.length())
 
     def show(self, out=sys.stdout):
         pass
