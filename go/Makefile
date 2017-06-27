@@ -1,6 +1,6 @@
 
 all:
-	cd src && go install
+	cd src && go build
 
 test:
 	cd src && go test

@@ -3,6 +3,8 @@
 
 package nwalign
 
+import "math"
+import "fmt"
 
 type Alignment struct {
   seq1Aligned string
@@ -116,4 +118,37 @@ func (a *Alignment) identity() float64 {
     }
   }
   return 1.0 - float64(nMm + nDel + nIns) / float64(a.length())
+}
+
+func getSeqMatches (s1 string, s2 string) string {
+  var matchChars = make([]byte, len(s1))
+  for i := 0; i < len(s1); i++ {
+    if (s1[i] == s2[i]) {
+      matchChars = append(matchChars, '*')
+    } else {
+      matchChars = append(matchChars, ' ')
+    }
+  }
+  return string(matchChars)
+}
+
+// Display alignment (with matches highlighted) formatted for a narrow terminal
+func (a *Alignment) show (seqid1 string, seqid2 string) {
+  const SEQ_WIDTH = 50
+  var nRows = int(math.Ceil(float64(a.length()) / float64(SEQ_WIDTH)))
+  var idWidth = int(math.Max(float64(len(seqid1)), float64(len(seqid2))))
+  var fmtString = fmt.Sprintf("%%%ds %%s\n", idWidth)
+  for k := 0; k < nRows; k++ {
+    var start = k * SEQ_WIDTH
+    var end = int(math.Min(float64((k + 1) * SEQ_WIDTH), float64(a.length())))
+    var s1 = a.seq1Aligned[start:end]
+    var s2 = a.seq2Aligned[start:end]
+    var seqMatches = getSeqMatches(s1, s2)
+    if (k > 0) {
+      fmt.Println("\n")
+    }
+    fmt.Printf(fmtString, seqid1, s1)
+    fmt.Printf(fmtString, "", seqMatches)
+    fmt.Printf(fmtString, seqid2, s2)
+  }
 }

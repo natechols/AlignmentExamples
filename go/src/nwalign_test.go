@@ -18,4 +18,5 @@ func TestNeedlemanWunsch (t *testing.T) {
   if math.Abs(a.identity() - 0.4545) > 0.0001 {
     t.Error("Expected identity ~ 0.4, got ", a.identity())
   }
+  //a.show("seq1", "seq2")
 }
