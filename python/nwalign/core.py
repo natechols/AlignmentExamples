@@ -93,5 +93,32 @@ class NeedlemanWunsch(object):
                 n_mm += 1
         return max(0, 1. - float(n_mm + n_ins + n_del) / self.length())
 
-    def show(self, out=sys.stdout):
-        pass
+    def show(self, out=sys.stdout, seq_width=50):
+        def _get_seq_matches(s1, s2):
+            chars = []
+            for aa, bb in zip(s1, s2):
+                if aa == bb:
+                    chars.append('*')
+                else:
+                    chars.append(" ")
+            return "".join(chars)
+        k = 0
+        rows = []
+        id1, id2 = "seq1", "seq2"
+        if not isinstance(self._seq1, basestring):
+            id1 = self._seq1.id
+        if not isinstance(self._seq2, basestring):
+            id2 = self._seq2.id
+        id_width = max(len(id1), len(id2))
+        line_fmt = "%%%ds  %%s" % id_width
+        while k < self.length():
+            s1 = self._seq1_aligned[k:k+seq_width]
+            s2 = self._seq2_aligned[k:k+seq_width]
+            seq_matches = _get_seq_matches(s1, s2)
+            line1 = line_fmt % (id1, s1)
+            line2 = line_fmt % ("", seq_matches)
+            line3 = line_fmt % (id2, s2)
+            k += seq_width
+            rows.append("\n".join([line1,line2,line3]))
+        out.write("\n\n\n".join(rows))
+        out.write("\n")
