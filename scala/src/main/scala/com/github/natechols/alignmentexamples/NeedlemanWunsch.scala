@@ -5,20 +5,21 @@ import scala.collection.mutable.ArrayBuffer
 import scala.math._
 
 
-object Constants {
-  val DIAG = (-1, -1)
-  val UP = (0, -1)
-  val LEFT = (-1, 0)
-}
-
-class NeedlemanWunsch(val seq1: String,
-                      val seq2: String,
+class NeedlemanWunsch(val seq1fasta: FastaRecord,
+                      val seq2fasta: FastaRecord,
                       val scoreMatrixName: String = "BLOSUM50",
                       val gapPenalty: Int = 8) {
 
   case class MatrixCell(score: Int, pointer: (Int, Int))
+  object Constants {
+    val DIAG = (-1, -1)
+    val UP = (0, -1)
+    val LEFT = (-1, 0)
+  }
 
   private val scoreMatrix = Blosum.getMatrix(scoreMatrixName)
+  private val seq1 = seq1fasta.sequence
+  private val seq2 = seq2fasta.sequence
   private val maxX = seq1.size
   private val maxY = seq2.size
 
@@ -68,13 +69,52 @@ class NeedlemanWunsch(val seq1: String,
 
   def alignment: (String, String) = (seq1Aligned, seq2Aligned)
 
+  def size: Int = seq1Aligned.size
+
   def identity: Double = {
     var (nMm, nIns, nDel) = (0,0,0)
-    for ((aa, bb) <- seq1Aligned.toCharArray.zip(seq2Aligned.toCharArray)) {
+    seq1Aligned.toCharArray.zip(seq2Aligned.toCharArray).foreach { case (aa,bb) =>
       if (aa == '-') nIns += 1
       else if (bb == '-') nDel += 1
       else if (aa != bb) nMm += 1
     }
-    max(0.0, 1.0 - (nMm+nIns+nDel).toDouble / seq1.size.toDouble)
+    max(0.0, 1.0 - (nMm+nIns+nDel).toDouble / size.toDouble)
+  }
+
+  private def matchChars = {
+    seq1Aligned.toCharArray.zip(seq2Aligned.toCharArray).map { case (aa, bb) =>
+      if (aa == bb) '*' else ' '
+    }.mkString
+  }
+
+  def format(seqWidth: Int = 50): String = {
+    var k = 0
+    val idWidth = max(seq1fasta.id.size.toDouble, seq2fasta.id.size.toDouble).toInt
+    val fmtString = "%%%ds  %%s".format(idWidth)
+    val lines = new ArrayBuffer[String]()
+    var matches = matchChars
+    while (k < this.size) {
+      if (k > 0) lines += "\n"
+      lines += fmtString.format(seq1fasta.id, seq1Aligned.slice(k, k+seqWidth))
+      lines += fmtString.format("", matches.slice(k, k+seqWidth))
+      lines += fmtString.format(seq2fasta.id, seq2Aligned.slice(k, k+seqWidth))
+      k += seqWidth
+    }
+    lines.mkString("\n")
+  }
+
+  def show(seqWidth: Int = 50): Unit = {
+    println(format(seqWidth))
+  }
+}
+
+object NeedlemanWunsch {
+  def apply(seq1: String,
+            seq2: String,
+            scoreMatrixName: String = "BLOSUM50",
+            gapPenalty: Int = 8) = {
+    val seq1fasta = FastaRecord("seq1", seq1)
+    val seq2fasta = FastaRecord("seq2", seq2)
+    new NeedlemanWunsch(seq1fasta, seq2fasta, scoreMatrixName, gapPenalty)
   }
 }

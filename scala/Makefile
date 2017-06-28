@@ -4,7 +4,7 @@
 build:
 	mkdir -p src/main/resources
 	cp ../data/BLOSUM* src/main/resources/
-	sbt compile
+	sbt compile pack
 
 clean:
 	sbt clean

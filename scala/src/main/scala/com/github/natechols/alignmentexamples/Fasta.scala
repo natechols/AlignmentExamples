@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 
 case class FastaRecord(id: String,
                        sequence: String,
-                       description: Option[String]) {
+                       description: Option[String] = None) {
 
   def header = s">$id" + description.map(d => s" $d").getOrElse("")
 
