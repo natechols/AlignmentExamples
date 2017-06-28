@@ -3,8 +3,11 @@
 
 package libnwalign
 
-import "math"
-import "fmt"
+import (
+  "bytes"
+  "fmt"
+  "math"
+)
 
 type Alignment struct {
   seq1Aligned string
@@ -129,7 +132,7 @@ func getSeqMatches (s1 string, s2 string) string {
       matchChars = append(matchChars, ' ')
     }
   }
-  return string(matchChars)
+  return string(bytes.Trim(matchChars, "\x00"))
 }
 
 // Display alignment (with matches highlighted) formatted for a narrow terminal
@@ -148,7 +151,7 @@ func (a *Alignment) Show (seqid1 string, seqid2 string) {
       fmt.Println("\n")
     }
     fmt.Printf(fmtString, seqid1, s1)
-    fmt.Printf(fmtString, "", seqMatches)
+    fmt.Printf(fmtString, " ", seqMatches)
     fmt.Printf(fmtString, seqid2, s2)
   }
 }
