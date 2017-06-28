@@ -1,6 +1,9 @@
 
 all:
-	cd src && go build
+	go install nwalign
 
 test:
-	cd src && go test
+	cd src/libnwalign && go test
+
+clean:
+	rm -rf bin pkg

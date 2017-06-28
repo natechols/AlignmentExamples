@@ -1,7 +1,7 @@
 // Author: Nat Echols
 // License: public domain
 
-package nwalign
+package libnwalign
 
 import "math"
 import "fmt"
@@ -100,13 +100,13 @@ func NeedlemanWunsch (seq1 string,
   return Alignment{string(seq1Aligned[:]), string(seq2Aligned[:])}
 }
 
-func (a *Alignment) length() int {
+func (a *Alignment) Length() int {
   return len(a.seq1Aligned)
 }
 
-func (a *Alignment) identity() float64 {
+func (a *Alignment) Identity() float64 {
   nMm, nDel, nIns := 0, 0, 0
-  for i := 0; i < a.length(); i++ {
+  for i := 0; i < a.Length(); i++ {
     aa := a.seq1Aligned[i]
     bb := a.seq2Aligned[i]
     if aa == '-' {
@@ -117,7 +117,7 @@ func (a *Alignment) identity() float64 {
       nMm++
     }
   }
-  return 1.0 - float64(nMm + nDel + nIns) / float64(a.length())
+  return 1.0 - float64(nMm + nDel + nIns) / float64(a.Length())
 }
 
 func getSeqMatches (s1 string, s2 string) string {
@@ -133,14 +133,14 @@ func getSeqMatches (s1 string, s2 string) string {
 }
 
 // Display alignment (with matches highlighted) formatted for a narrow terminal
-func (a *Alignment) show (seqid1 string, seqid2 string) {
+func (a *Alignment) Show (seqid1 string, seqid2 string) {
   const SEQ_WIDTH = 50
-  var nRows = int(math.Ceil(float64(a.length()) / float64(SEQ_WIDTH)))
+  var nRows = int(math.Ceil(float64(a.Length()) / float64(SEQ_WIDTH)))
   var idWidth = int(math.Max(float64(len(seqid1)), float64(len(seqid2))))
-  var fmtString = fmt.Sprintf("%%%ds %%s\n", idWidth)
+  var fmtString = fmt.Sprintf("%%%ds  %%s\n", idWidth)
   for k := 0; k < nRows; k++ {
     var start = k * SEQ_WIDTH
-    var end = int(math.Min(float64((k + 1) * SEQ_WIDTH), float64(a.length())))
+    var end = int(math.Min(float64((k + 1) * SEQ_WIDTH), float64(a.Length())))
     var s1 = a.seq1Aligned[start:end]
     var s2 = a.seq2Aligned[start:end]
     var seqMatches = getSeqMatches(s1, s2)

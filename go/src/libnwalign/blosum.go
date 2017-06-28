@@ -1,7 +1,7 @@
 // License: LGPL
 // TODO load BLOSUM matrices from external files
 
-package nwalign
+package libnwalign
 
 func blosumMatrices(/*matrixName string*/) map[string][24][24]int {
   var matrices = make(map[string][24][24]int)
