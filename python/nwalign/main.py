@@ -47,7 +47,7 @@ def main(argv=sys.argv[1:], out=sys.stdout):
         warnings.warn("Multiple records in file 2, will only align the 1st")
     nw = NeedlemanWunsch(
         records1[0], records2[0], args.matrix, args.gap_penalty)
-    print("Sequence identity: {i:.2f}%".format(i=nw.identity() * 100),
+    print("Sequence identity = {i:.2f}%".format(i=nw.identity() * 100),
           file=out)
     out.write("\n")
     nw.show(out=out)
