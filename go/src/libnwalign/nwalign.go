@@ -4,9 +4,14 @@
 package libnwalign
 
 import (
+  "os"
   "bytes"
   "fmt"
   "math"
+  "path/filepath"
+  "bufio"
+  "strings"
+  "strconv"
 )
 
 type Alignment struct {
@@ -20,14 +25,39 @@ type MatrixCell struct {
 }
 
 func getMatrix (matrixName string) map[byte]map[byte]int {
-  var matrixCols = [24]byte{'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'B', 'Z', 'X', '*'}
-  matrices := blosumMatrices()
-  var rawData [24][24]int = matrices[matrixName]
+  var matrixPath = filepath.Join(os.Getenv("BLOSUM_DATA"), matrixName + ".txt")
+  f, err := os.Open(matrixPath)
+  if (err != nil) {
+    panic("Can't read file " + matrixPath + " (error: " + err.Error() + ").  Make sure the BLOSUM_DATA environment variable is set.")
+  }
+  defer f.Close()
+  scanner := bufio.NewScanner(f)
+  var matrixCols []byte = make([]byte, 0, 24);
   scoreMatrix := make(map[byte]map[byte]int)
-  for i, aa := range matrixCols {
-    scoreMatrix[aa] = make(map[byte]int)
-    for j, bb  := range matrixCols {
-      scoreMatrix[aa][bb] = rawData[i][j]
+  for scanner.Scan() {
+    line := scanner.Text()
+    if (strings.HasPrefix(line, "#")) {
+      continue
+    } else if (strings.HasPrefix(line, " ")) {
+      var fields = strings.Fields(line)
+      for i := 0; i < len(fields); i++ {
+        var aa = fields[i]
+        if (aa != " ") && (aa != "") {
+          matrixCols = append(matrixCols, []byte(aa)[0])
+        }
+      }
+    } else {
+      var fields = strings.Fields(line)
+      var aa = []byte(fields[0])[0]
+      scoreMatrix[aa] = make(map[byte]int)
+      for j, x := range fields[1:] {
+        var bb = matrixCols[j]
+        y, err := strconv.ParseInt(x, 10, 32)
+        if (err != nil) {
+          panic("Can't parse " + x + " as integer")
+        }
+        scoreMatrix[aa][bb] = int(y)
+      }
     }
   }
   return scoreMatrix
