@@ -27,7 +27,7 @@ typedef struct {
   short cell_pointer;
 } matrix_cell;
 
-sequence_alignment *NeedlemanWunsch(char *seq1, char *seq2, char *matrix_name,
+sequence_alignment *NeedlemanWunsch(char *seq1, char *seq2, int **score_matrix,
                                     int gap_penalty);
 
 int **get_blosum_matrix(char *matrix_name);
