@@ -1,0 +1,6 @@
+[package]
+name = "nwalign"
+version = "0.1.0"
+authors = ["natechols <nathaniel.echols@gmail.com>"]
+
+[dependencies]
