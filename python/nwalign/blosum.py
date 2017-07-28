@@ -1,6 +1,7 @@
 # Author: Nat Echols
 # This source code is in the public domain.
 
+import json
 import os.path
 
 
@@ -39,3 +40,11 @@ MATRICES = {
     "BLOSUM50": BLOSUM50,
     "BLOSUM62": BLOSUM62,
 }
+
+def to_js(file_name):
+    with open(file_name, "w") as js_out:
+        js_out.write("""
+var scoreMatrices = {{
+    "BLOSUM50": {a},
+    "BLOSUM62": {b}
+}};""".format(a=json.dumps(BLOSUM50._scores), b=json.dumps(BLOSUM62._scores)))

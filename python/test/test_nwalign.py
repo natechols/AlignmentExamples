@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import os.path as op
 
-from nwalign import NeedlemanWunsch, read_fasta
+from nwalign import needlemanWunsch, read_fasta
 
 
 class TestFastaReader(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestFastaReader(unittest.TestCase):
 class TestNeedlemanWunsch(unittest.TestCase):
 
     def test_1(self): # Durbin et al. p. 21
-        nw = NeedlemanWunsch("HEAGAWGHEE", "PAWHEAE")
+        nw = needlemanWunsch("HEAGAWGHEE", "PAWHEAE")
         self.assertEqual(nw.alignment(), ('HEAGAWGHE-E', '--P-AW-HEAE'))
         self.assertEqual(nw.length(), 11)
         self.assertAlmostEqual(nw.identity(), 0.4545, 4)
@@ -35,6 +35,6 @@ class TestNeedlemanWunsch(unittest.TestCase):
     def test_2(self):
         seq1 = "VLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR"
         seq2 = "VHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH"
-        nw = NeedlemanWunsch(seq1, seq2)
+        nw = needlemanWunsch(seq1, seq2)
         self.assertEqual(nw.alignment(), ('V-LSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHF-DLS-----HGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR', 'VHLTPEEKSAVTALWGKV--NVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH'))
         self.assertAlmostEqual(nw.identity(), 0.4324, 4)

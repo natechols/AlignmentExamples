@@ -13,3 +13,6 @@ clean:
 
 test:
 	nosetests test/test_nwalign.py
+
+js:
+	python -c "from nwalign import blosum; blosum.to_js('blosum.js')"

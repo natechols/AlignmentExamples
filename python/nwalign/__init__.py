@@ -1,2 +1,2 @@
-from .core import NeedlemanWunsch
+from .core import needlemanWunsch
 from .fasta import read_fasta, FastaRecord

@@ -12,7 +12,7 @@ import os.path as op
 import sys
 
 from .fasta import read_fasta
-from .core import NeedlemanWunsch
+from .core import needlemanWunsch
 
 
 VERSION = "0.1"
@@ -45,7 +45,7 @@ def main(argv=sys.argv[1:], out=sys.stdout):
         warnings.warn("Multiple records in file 1, will only align the 1st")
     if len(records2) > 1:
         warnings.warn("Multiple records in file 2, will only align the 1st")
-    nw = NeedlemanWunsch(
+    nw = needlemanWunsch(
         records1[0], records2[0], args.matrix, args.gap_penalty)
     print("Sequence identity = {i:.2f}%".format(i=nw.identity() * 100),
           file=out)
